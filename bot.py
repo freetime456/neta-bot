@@ -23,43 +23,39 @@ async def on_ready():
     try:
         synced = await bot.tree.sync()
         print(f"ログイン成功: {bot.user}")
-        print(f"スラッシュコマンド同期: {len(synced)}個")
+        print(f"コマンド同期: {len(synced)}個")
     except Exception as e:
         print(f"同期エラー: {e}")
 
 
 # =========================
-# 共通
+# 共通：％判定
 # =========================
 
-def target_name(user):
-    return user.display_name
-
-
-def percent_result(name, title, emoji):
+def percent_embed(user, title, emoji):
     value = random.randint(0, 100)
 
     if value <= 10:
-        comment = "逆にすごい。"
+        comment = "ほぼ無い。"
     elif value <= 30:
-        comment = "まだ大丈夫……たぶん。"
+        comment = "まだ普通。"
     elif value <= 50:
-        comment = "微妙なライン。"
+        comment = "微妙なところ。"
     elif value <= 70:
-        comment = "なかなかですね。"
+        comment = "そこそこ高い。"
     elif value <= 90:
-        comment = "かなり高いです。"
+        comment = "かなり高いｗｗｗ"
     else:
         comment = "これはヤバいｗｗｗ"
 
     embed = discord.Embed(
         title=f"{emoji} {title}",
-        description=f"**{name}** の結果",
+        description=f"対象：**{user.display_name}**"
     )
 
     embed.add_field(
         name="判定",
-        value=f"## {value}%",
+        value=f"# {value}%",
         inline=False
     )
 
@@ -73,57 +69,86 @@ def percent_result(name, title, emoji):
 
 
 # =========================
-# 人生終了
+# 黒歴史
 # =========================
 
-@bot.tree.command(name="人生終了", description="人生終了度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def jinsei(interaction: discord.Interaction, user: discord.Member):
+@bot.tree.command(name="黒歴史", description="ユーザーの黒歴史を予想します")
+@app_commands.describe(user="黒歴史を予想するユーザー")
+async def kurorekishi(
+    interaction: discord.Interaction,
+    user: discord.Member
+):
 
-    value = random.randint(0, 100)
-
-    comments = [
-        "まだ人生は続いています。",
-        "ちょっと危ない。",
-        "人生の残りHPが少ない。",
-        "かなり終わりに近づいています。",
-        "人生終了のお知らせ。",
-        "伝説になりました。",
+    predictions = [
+        "鏡の前で謎のポーズを決めていた",
+        "誰もいないところでカッコいいセリフを練習していた",
+        "昔のSNSのプロフィールがめちゃくちゃ痛かった",
+        "ゲームで負けて本気でキレていた",
+        "自分だけの必殺技を考えていた",
+        "黒歴史ノートを作っていた",
+        "意味不明なあだ名を自分で名乗っていた",
+        "昔の写真を見返して自分で恥ずかしくなった",
+        "謎のキャラクターになりきっていた",
+        "友達に送るつもりのないメッセージを間違えて送った",
+        "学校で謎のポーズをしていた",
+        "ゲームの名前をめちゃくちゃカッコつけていた",
+        "昔の自分を思い出して『なんでやったんだ』となった",
     ]
 
     embed = discord.Embed(
-        title="💀 人生終了判定",
-        description=f"**{target_name(user)}** の人生終了度",
+        title="📕 黒歴史予想",
+        description=f"**{user.display_name}** の黒歴史を予想します……"
     )
 
     embed.add_field(
-        name="終了度",
-        value=f"## {value}%",
+        name="🔮 予想",
+        value=random.choice(predictions),
         inline=False
     )
 
-    embed.add_field(
-        name="判定",
-        value=random.choice(comments),
-        inline=False
-    )
+    embed.set_footer(text="※完全ランダムのネタ予想です")
 
     await interaction.response.send_message(embed=embed)
 
 
 # =========================
-# 黒歴史
+# 人生終了
 # =========================
 
-@bot.tree.command(name="黒歴史", description="黒歴史度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def kurorekishi(interaction: discord.Interaction, user: discord.Member):
+@bot.tree.command(name="人生終了", description="人生終了の原因を予想します")
+@app_commands.describe(user="対象ユーザー")
+async def jinsei(
+    interaction: discord.Interaction,
+    user: discord.Member
+):
 
-    embed = percent_result(
-        target_name(user),
-        "黒歴史度",
-        "📕"
+    reasons = [
+        "寝坊",
+        "スマホの見すぎ",
+        "宿題を忘れる",
+        "財布を忘れる",
+        "ゲームのやりすぎ",
+        "寝落ち",
+        "充電切れ",
+        "電車・バスに乗り遅れる",
+        "お腹が空きすぎる",
+        "謎の行動",
+        "自分で自分を追い込む",
+        "特に理由なし",
+    ]
+
+    embed = discord.Embed(
+        title="💀 人生終了予想",
+        description=f"**{user.display_name}** の人生終了原因を予想……"
     )
+
+    embed.add_field(
+        name="💀 原因",
+        value=random.choice(reasons),
+        inline=False
+    )
+
+    embed.set_footer(text="※もちろんネタです")
 
     await interaction.response.send_message(embed=embed)
 
@@ -133,38 +158,38 @@ async def kurorekishi(interaction: discord.Interaction, user: discord.Member):
 # =========================
 
 @bot.tree.command(name="好感度", description="好感度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def koukando(interaction: discord.Interaction, user: discord.Member):
+@app_commands.describe(user="対象ユーザー")
+async def koukando(
+    interaction: discord.Interaction,
+    user: discord.Member
+):
 
     value = random.randint(0, 100)
 
-    if value <= 10:
-        comment = "誰ですか？"
-    elif value <= 30:
-        comment = "知り合いくらい。"
-    elif value <= 50:
-        comment = "普通です。"
-    elif value <= 70:
-        comment = "結構好きかも。"
-    elif value <= 90:
-        comment = "かなり好かれています。"
-    else:
-        comment = "めちゃくちゃ好かれています。"
+    comments = [
+        "誰ですか？",
+        "知り合いくらい。",
+        "普通です。",
+        "まあまあ好き。",
+        "結構好かれています。",
+        "かなり好かれています。",
+        "めちゃくちゃ好かれています。",
+    ]
 
     embed = discord.Embed(
-        title="❤️ 好感度判定",
-        description=f"**{target_name(user)}** の好感度",
+        title="❤️ 好感度",
+        description=f"**{user.display_name}** の好感度"
     )
 
     embed.add_field(
-        name="好感度",
-        value=f"## {value}%",
+        name="❤️ 好感度",
+        value=f"# {value}%",
         inline=False
     )
 
     embed.add_field(
         name="評価",
-        value=comment,
+        value=random.choice(comments),
         inline=False
     )
 
@@ -172,123 +197,135 @@ async def koukando(interaction: discord.Interaction, user: discord.Member):
 
 
 # =========================
-# その他の判定
+# ○○度シリーズ
 # =========================
 
 @bot.tree.command(name="イケメン度", description="イケメン度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def ikemen(interaction: discord.Interaction, user: discord.Member):
-
+@app_commands.describe(user="対象ユーザー")
+async def ikemen(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "イケメン度", "😎")
+        embed=percent_embed(user, "イケメン度", "😎")
     )
 
 
 @bot.tree.command(name="バカ度", description="バカ度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def baka(interaction: discord.Interaction, user: discord.Member):
-
+@app_commands.describe(user="対象ユーザー")
+async def baka(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "バカ度", "🧠")
+        embed=percent_embed(user, "バカ度", "🧠")
     )
 
 
 @bot.tree.command(name="運の良さ", description="運の良さを判定します")
-@app_commands.describe(user="判定するユーザー")
-async def luck(interaction: discord.Interaction, user: discord.Member):
-
+@app_commands.describe(user="対象ユーザー")
+async def luck(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "運の良さ", "🍀")
+        embed=percent_embed(user, "運の良さ", "🍀")
     )
 
 
 @bot.tree.command(name="厨二病度", description="厨二病度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def chuunibyou(interaction: discord.Interaction, user: discord.Member):
-
+@app_commands.describe(user="対象ユーザー")
+async def chuunibyou(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "厨二病度", "⚔️")
+        embed=percent_embed(user, "厨二病度", "⚔️")
     )
 
 
 @bot.tree.command(name="変人度", description="変人度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def henjin(interaction: discord.Interaction, user: discord.Member):
-
+@app_commands.describe(user="対象ユーザー")
+async def henjin(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "変人度", "🗿")
+        embed=percent_embed(user, "変人度", "🗿")
     )
 
 
 @bot.tree.command(name="人間度", description="人間度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def ningen(interaction: discord.Interaction, user: discord.Member):
-
+@app_commands.describe(user="対象ユーザー")
+async def ningen(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "人間度", "👤")
+        embed=percent_embed(user, "人間度", "👤")
     )
 
 
-@bot.tree.command(name="犯罪者度", description="ネタとして犯罪者度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def criminal(interaction: discord.Interaction, user: discord.Member):
-
+@bot.tree.command(name="犯罪者度", description="犯罪者っぽさをネタ判定します")
+@app_commands.describe(user="対象ユーザー")
+async def hanzai(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "犯罪者度", "🚓")
+        embed=percent_embed(user, "犯罪者度", "🚓")
     )
 
 
-@bot.tree.command(name="犬化", description="犬度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def inu(interaction: discord.Interaction, user: discord.Member):
-
+@bot.tree.command(name="犬化", description="犬っぽさを判定します")
+@app_commands.describe(user="対象ユーザー")
+async def inu(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "犬化度", "🐕")
-    )
-
-
-@bot.tree.command(name="存在価値", description="存在価値を謎判定します")
-@app_commands.describe(user="判定するユーザー")
-async def sonzai(interaction: discord.Interaction, user: discord.Member):
-
-    await interaction.response.send_message(
-        embed=percent_result(target_name(user), "存在価値", "🗿")
+        embed=percent_embed(user, "犬化度", "🐕")
     )
 
 
 @bot.tree.command(name="陽キャ度", description="陽キャ度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def youkyado(interaction: discord.Interaction, user: discord.Member):
-
+@app_commands.describe(user="対象ユーザー")
+async def youkyaku(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "陽キャ度", "✨")
+        embed=percent_embed(user, "陽キャ度", "✨")
     )
 
 
 @bot.tree.command(name="陰キャ度", description="陰キャ度を判定します")
-@app_commands.describe(user="判定するユーザー")
-async def inkyado(interaction: discord.Interaction, user: discord.Member):
-
+@app_commands.describe(user="対象ユーザー")
+async def inkyaku(interaction, user: discord.Member):
     await interaction.response.send_message(
-        embed=percent_result(target_name(user), "陰キャ度", "🌑")
+        embed=percent_embed(user, "陰キャ度", "🌑")
     )
+
+
+# =========================
+# 存在価値
+# =========================
+
+@bot.tree.command(name="存在価値", description="存在価値をネタ判定します")
+@app_commands.describe(user="対象ユーザー")
+async def sonzai(interaction, user: discord.Member):
+
+    values = [
+        "Discordにいるだけで意味がある",
+        "とりあえず存在している",
+        "鯖の重要人物……かもしれない",
+        "NPC判定",
+        "今日だけ存在価値が高い",
+        "謎の存在",
+    ]
+
+    embed = discord.Embed(
+        title="🗿 存在価値判定",
+        description=f"**{user.display_name}**"
+    )
+
+    embed.add_field(
+        name="判定",
+        value=random.choice(values),
+        inline=False
+    )
+
+    await interaction.response.send_message(embed=embed)
 
 
 # =========================
 # 運勢
 # =========================
 
-@bot.tree.command(name="運勢", description="今日の謎の運勢を占います")
-async def unsei(interaction: discord.Interaction):
+@bot.tree.command(name="運勢", description="今日の運勢を予想します")
+async def unsei(interaction):
 
     results = [
-        "今日は何をしてもだいたい普通です。",
-        "コンビニに行くと何か起きます。",
-        "今日は運がいい……気がします。",
-        "財布を確認しましょう。",
-        "誰かからメッセージが来るかもしれません。",
+        "今日は何をしても普通。",
+        "今日は謎の幸運が起きます。",
+        "スマホを落とさないように。",
+        "誰かから連絡が来るかも。",
         "今日は早く寝ましょう。",
-        "何も考えずに生きてください。",
+        "何かを忘れる可能性があります。",
+        "特に何も起きません。",
     ]
 
     embed = discord.Embed(
@@ -303,23 +340,23 @@ async def unsei(interaction: discord.Interaction):
 # 逮捕
 # =========================
 
-@bot.tree.command(name="逮捕", description="ユーザーを適当な罪で逮捕します")
+@bot.tree.command(name="逮捕", description="罪状を予想して逮捕します")
 @app_commands.describe(user="逮捕するユーザー")
-async def taiho(interaction: discord.Interaction, user: discord.Member):
+async def taiho(interaction, user: discord.Member):
 
     crimes = [
         "存在した罪",
         "寝坊した罪",
         "Discordを開きすぎた罪",
         "しょうもない発言をした罪",
-        "急に黙った罪",
         "意味不明な行動をした罪",
-        "飯を食べすぎた罪",
+        "ゲームをやりすぎた罪",
+        "急に黙った罪",
     ]
 
     embed = discord.Embed(
         title="🚓 逮捕",
-        description=f"**{target_name(user)}** を逮捕しました。",
+        description=f"**{user.display_name}** を逮捕しました。"
     )
 
     embed.add_field(
@@ -335,15 +372,36 @@ async def taiho(interaction: discord.Interaction, user: discord.Member):
 # 裁判
 # =========================
 
-@bot.tree.command(name="裁判", description="有罪か無罪か判定します")
+@bot.tree.command(name="裁判", description="裁判結果を予想します")
 @app_commands.describe(user="裁判するユーザー")
-async def saiban(interaction: discord.Interaction, user: discord.Member):
+async def saiban(interaction, user: discord.Member):
 
-    result = random.choice(["⚖️ 有罪", "⚖️ 無罪"])
+    crimes = [
+        "寝坊罪",
+        "Discord中毒罪",
+        "謎行動罪",
+        "ゲームやりすぎ罪",
+        "存在罪",
+        "しょうもない発言罪",
+    ]
+
+    result = random.choice(["有罪 ⚖️", "無罪 ⚖️"])
 
     embed = discord.Embed(
         title="⚖️ Discord裁判所",
-        description=f"被告：**{target_name(user)}**\n\n# {result}",
+        description=f"被告：**{user.display_name}**"
+    )
+
+    embed.add_field(
+        name="罪状予想",
+        value=random.choice(crimes),
+        inline=False
+    )
+
+    embed.add_field(
+        name="判決",
+        value=f"# {result}",
+        inline=False
     )
 
     await interaction.response.send_message(embed=embed)
@@ -353,9 +411,9 @@ async def saiban(interaction: discord.Interaction, user: discord.Member):
 # 予言
 # =========================
 
-@bot.tree.command(name="予言", description="意味不明な未来を予言します")
+@bot.tree.command(name="予言", description="未来を予想します")
 @app_commands.describe(user="予言するユーザー")
-async def yogen(interaction: discord.Interaction, user: discord.Member):
+async def yogen(interaction, user: discord.Member):
 
     predictions = [
         "明日、何かを忘れます。",
@@ -370,7 +428,13 @@ async def yogen(interaction: discord.Interaction, user: discord.Member):
 
     embed = discord.Embed(
         title="🔮 未来予言",
-        description=f"**{target_name(user)}** の未来\n\n{random.choice(predictions)}"
+        description=f"**{user.display_name}** の未来を予想……"
+    )
+
+    embed.add_field(
+        name="予言",
+        value=random.choice(predictions),
+        inline=False
     )
 
     await interaction.response.send_message(embed=embed)
@@ -380,36 +444,38 @@ async def yogen(interaction: discord.Interaction, user: discord.Member):
 # 死亡
 # =========================
 
-@bot.tree.command(name="死亡", description="ユーザーの死亡判定をします")
+@bot.tree.command(name="死亡", description="ネタとして死因を予想します")
 @app_commands.describe(user="対象ユーザー")
-async def shibou(interaction: discord.Interaction, user: discord.Member):
+async def shibou(interaction, user: discord.Member):
 
-    reasons = [
+    causes = [
         "眠気に負けました。",
         "スマホを見すぎました。",
-        "腹が減りました。",
-        "人生に疲れました。",
-        "階段を見ただけで力尽きました。",
+        "お腹が空きすぎました。",
         "Discordをやりすぎました。",
+        "寝落ちしました。",
+        "充電切れで力尽きました。",
         "特に理由はありません。",
     ]
 
     embed = discord.Embed(
-        title="💀 死亡判定",
-        description=f"**{target_name(user)}** は死亡しました。",
+        title="💀 死亡予想",
+        description=f"**{user.display_name}** の死因を予想……"
     )
 
     embed.add_field(
         name="死因",
-        value=random.choice(reasons),
+        value=random.choice(causes),
         inline=False
     )
+
+    embed.set_footer(text="※完全なネタです")
 
     await interaction.response.send_message(embed=embed)
 
 
 # =========================
-# 起動
+# Bot起動
 # =========================
 
 if not TOKEN:
